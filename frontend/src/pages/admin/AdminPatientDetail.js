@@ -94,7 +94,7 @@ function AdminPatientDetail() {
               className="p-3 bg-indigo-50 border border-indigo-200 rounded-md flex justify-between items-center"
             >
               <span>
-                <span className="font-medium">{a.provider}</span> —{" "}
+                <span className="font-medium">{a.provider}</span> - {" "}
                 {new Date(a.datetime).toLocaleString()} ({a.repeat})
               </span>
               <span className="space-x-2">
@@ -140,7 +140,7 @@ function AdminPatientDetail() {
               className="p-3 bg-green-50 border border-green-200 rounded-md flex justify-between items-center"
             >
               <span>
-                <span className="font-medium">{p.medication}</span> — {p.dosage},{" "}
+                <span className="font-medium">{p.medication}</span> - {p.dosage},{" "}
                 qty {p.quantity} (Refill: {p.refill_on})
               </span>
               <span className="space-x-2">
