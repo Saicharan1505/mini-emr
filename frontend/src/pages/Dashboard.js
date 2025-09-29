@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
@@ -12,6 +13,9 @@ function Dashboard() {
       try {
         const res = await API.get("/patients/me");
         setPatient(res.data);
+
+        // store patientId for later use in drill-down pages
+        localStorage.setItem("patientId", res.data.id);
       } catch (err) {
         if (err.response?.status === 401) {
           localStorage.removeItem("token");
@@ -24,10 +28,12 @@ function Dashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("patientId");
     navigate("/");
   };
 
-  if (!patient) return <p className="text-center text-gray-500 mt-10">Loading...</p>;
+  if (!patient)
+    return <p className="text-center text-gray-500 mt-10">Loading...</p>;
 
   const today = new Date();
   const next7Days = addDays(today, 7);
@@ -43,7 +49,9 @@ function Dashboard() {
   return (
     <div className="max-w-3xl mx-auto mt-10 p-6 bg-white shadow-xl rounded-xl">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-indigo-700">Welcome, {patient.name}</h2>
+        <h2 className="text-2xl font-bold text-indigo-700">
+          Welcome, {patient.name}
+        </h2>
         <button
           onClick={handleLogout}
           className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
@@ -54,7 +62,9 @@ function Dashboard() {
 
       {/* Appointments */}
       <section className="mb-8">
-        <h3 className="text-xl font-semibold text-gray-800 mb-3">Appointments (Next 7 Days)</h3>
+        <h3 className="text-xl font-semibold text-gray-800 mb-3">
+          Appointments (Next 7 Days)
+        </h3>
         {upcomingAppointments.length > 0 ? (
           <ul className="space-y-2">
             {upcomingAppointments.map((a) => (
@@ -62,7 +72,7 @@ function Dashboard() {
                 key={a.id}
                 className="p-3 bg-indigo-50 border border-indigo-200 rounded-lg"
               >
-                <span className="font-medium">{a.provider}</span> —{" "}
+                <span className="font-medium">{a.provider}</span> - {" "}
                 {format(new Date(a.datetime), "PPpp")}
               </li>
             ))}
@@ -70,11 +80,21 @@ function Dashboard() {
         ) : (
           <p className="text-gray-500">No upcoming appointments.</p>
         )}
+
+        {/* View all link */}
+        <button
+          onClick={() => navigate("/appointments")}
+          className="mt-3 text-indigo-600 hover:underline"
+        >
+          View all appointments (Next 3 Months)
+        </button>
       </section>
 
       {/* Prescriptions */}
       <section>
-        <h3 className="text-xl font-semibold text-gray-800 mb-3">Prescription Refills (Next 7 Days)</h3>
+        <h3 className="text-xl font-semibold text-gray-800 mb-3">
+          Prescription Refills (Next 7 Days)
+        </h3>
         {upcomingPrescriptions.length > 0 ? (
           <ul className="space-y-2">
             {upcomingPrescriptions.map((p) => (
@@ -82,14 +102,24 @@ function Dashboard() {
                 key={p.id}
                 className="p-3 bg-green-50 border border-green-200 rounded-lg"
               >
-                <span className="font-medium">{p.medication}</span> — {p.dosage} 
-                <span className="ml-2 text-gray-600">(Refill: {format(new Date(p.refill_on), "PP")})</span>
+                <span className="font-medium">{p.medication}</span> - {p.dosage}
+                <span className="ml-2 text-gray-600">
+                  (Refill: {format(new Date(p.refill_on), "PP")})
+                </span>
               </li>
             ))}
           </ul>
         ) : (
           <p className="text-gray-500">No refills this week.</p>
         )}
+
+        {/* View all link */}
+        <button
+          onClick={() => navigate("/prescriptions")}
+          className="mt-3 text-green-600 hover:underline"
+        >
+          View all prescriptions (Next 3 Months)
+        </button>
       </section>
     </div>
   );

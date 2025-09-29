@@ -3,7 +3,7 @@ const router = express.Router();
 const patientController = require("../controllers/patientController");
 const authMiddleware = require("../middleware/authMiddleware");
 
-// 👇 Order matters: define /me BEFORE /:id
+//  Order matters: define /me BEFORE /:id
 router.get("/me", authMiddleware, async (req, res) => {
   try {
     const patient = await patientController.getPatientById({

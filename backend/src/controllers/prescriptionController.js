@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const Prescription = require("../models/Prescription");
 const Patient = require("../models/patient");
 
@@ -53,6 +54,31 @@ exports.deletePrescription = async (req, res) => {
 
     await prescription.destroy();
     res.json({ message: "Prescription deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+// Get upcoming prescription refills (next 3 months) for a patient
+exports.getUpcomingPrescriptions = async (req, res) => {
+  try {
+    const { patientId } = req.params;
+    const today = new Date();
+    const threeMonths = new Date();
+    threeMonths.setMonth(today.getMonth() + 3);
+
+    const prescriptions = await Prescription.findAll({
+      where: {
+        patientId,
+        refill_on: {
+          [Op.between]: [today, threeMonths],
+        },
+      },
+      order: [["refill_on", "ASC"]],
+    });
+
+    res.json(prescriptions);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
