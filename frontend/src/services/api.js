@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000", // backend URL
+  baseURL: "https://mini-emr-wyzm.onrender.com", // backend URL
 });
 
 // Attach token automatically if present
